@@ -37,6 +37,7 @@ const constraints = {
 
 function initRecording() {
 	socket.emit('startGoogleCloudStream', ''); //init socket Google Speech Connection
+	responsiveVoice.speak("You may from now use voice command to understand the dashboard", "UK English Female");
 	streamStreaming = true;
 	AudioContext = window.AudioContext || window.webkitAudioContext;
 	context = new AudioContext({
@@ -98,7 +99,7 @@ function stopRecording() {
 	recordingStatus.style.visibility = "hidden";
 	streamStreaming = false;
 	socket.emit('endGoogleCloudStream', '');
-
+responsiveVoice.speak("From now, you may not use voice command to understand the dashboard", "UK English Female");
 
 	let track = globalStream.getTracks()[0];
 	track.stop();
@@ -130,7 +131,7 @@ function stopRecording() {
 //================= SOCKET IO =================
 socket.on('connect', function (data) {
 	socket.emit('join', 'Server Connected to Client');
-
+    
 });
 
 
