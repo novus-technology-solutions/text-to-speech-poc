@@ -128,6 +128,18 @@ responsiveVoice.speak("From now, you may not use voice command to understand the
 	// videoElement.srcObject = null;
 }
 
+function countoccur(main_str, sub_str) {
+	main_str += '';
+	sub_str += '';
+
+	if (sub_str.length <= 0) {
+		return main_str.length + 1;
+	}
+
+	const subStr = sub_str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return (main_str.match(new RegExp(subStr, 'gi')) || []).length;
+}
+
 //================= SOCKET IO =================
 socket.on('connect', function (data) {
 	socket.emit('join', 'Server Connected to Client');
@@ -139,56 +151,96 @@ socket.on('messages', function (data) {
 	console.log(data);
 });
 
+let lastcommand = null;
+let voicecommandtemp = null;
+let loopChecker = false;
 
 socket.on('speechData', function (data) {
 	// console.log(data.results[0].alternatives[0].transcript);
-	var dataFinal = undefined || data.results[0].isFinal;
+	
+	//if (loopChecker === false ) {
+	
+		 var dataFinal = undefined || data.results[0].isFinal;
 
-	if (dataFinal === false) {
-		// console.log(resultText.lastElementChild);
-		if (removeLastSentence) { resultText.lastElementChild.remove(); }
-		removeLastSentence = true;
+		 if (dataFinal === false) {
+		 	// console.log(resultText.lastElementChild);
+		 	if (removeLastSentence) {
+		 		resultText.lastElementChild.remove();
+		 	}
+		 	removeLastSentence = true;
 
-		//add empty span
-		let empty = document.createElement('span');
-		resultText.appendChild(empty);
+		 	//add empty span
+		 	let empty = document.createElement('span');
+		 	resultText.appendChild(empty);
 
-		//add children to empty span
-		let edit = addTimeSettingsInterim(data);
+		 	//add children to empty span
+		 	let edit = addTimeSettingsInterim(data);
 
-		for (var i = 0; i < edit.length; i++) {
-			resultText.lastElementChild.appendChild(edit[i]);
-			resultText.lastElementChild.appendChild(document.createTextNode('\u00A0'));
-		}
+		 	for (var i = 0; i < edit.length; i++) {
+		 		resultText.lastElementChild.appendChild(edit[i]);
+		 		resultText.lastElementChild.appendChild(document.createTextNode('\u00A0'));
+			 }
+			 			
+		 } else if (dataFinal === true) {
+		 	resultText.lastElementChild.remove();
 
-	} else if (dataFinal === true) {
-		resultText.lastElementChild.remove();
+		 	//add empty span
+		 	let empty = document.createElement('span');
+		 	resultText.appendChild(empty);
 
-		//add empty span
-		let empty = document.createElement('span');
-		resultText.appendChild(empty);
+		 	//add children to empty span
+		 	let edit = addTimeSettingsFinal(data);
+		 	for (var i = 0; i < edit.length; i++) {
+		 		if (i === 0) {
+		 			edit[i].innerText = capitalize(edit[i].innerText)
+		 		}
+		 		resultText.lastElementChild.appendChild(edit[i]);
 
-		//add children to empty span
-		let edit = addTimeSettingsFinal(data);
-		for (var i = 0; i < edit.length; i++) {
-			if (i === 0) {
-				edit[i].innerText = capitalize(edit[i].innerText)
+		 		if (i !== edit.length - 1) {
+		 			resultText.lastElementChild.appendChild(document.createTextNode('\u00A0'));
+		 		}
+		 	}
+		 	resultText.lastElementChild.appendChild(document.createTextNode('\u002E\u00A0'));
+
+		 	//console.log("Google Speech sent 'final' Sentence.");
+		 	finalWord = true;
+		 	endButton.disabled = false;
+
+		 	removeLastSentence = false;
+		 	console.log(resultText.innerText); //Fode
+		     voicecommandtemp = resultText.innerText;
+			 loopChecker = countoccur(voicecommandtemp, lastcommand) === 0 
+						  && countoccur(voicecommandtemp, "interacting with me") === 0
+						  && countoccur(voicecommandtemp, "use my knowledge") === 0;
+			
+
+			if (loopChecker === true) {
+				lastcommand = voicecommandtemp;
+				let voicecommandfinal = voicecommandtemp.split(".");
+				let voicecommandslice = (voicecommandfinal[0]).split(" ");
+		        if (voicecommandslice.length > 2) {
+					console.log(voicecommandslice); //Fode
+					responsiveVoice.speak("Great! I will use my knowledge to " + voicecommandtemp, "UK English Female");
+				} else {
+					responsiveVoice.speak("Please use the right pattern for interacting with me.", "UK English Female");
+				}
 			}
-			resultText.lastElementChild.appendChild(edit[i]);
+		 	
 
-			if (i !== edit.length - 1) {
-				resultText.lastElementChild.appendChild(document.createTextNode('\u00A0'));
-			}
-		}
-		resultText.lastElementChild.appendChild(document.createTextNode('\u002E\u00A0'));
+			 
+               
+		 }
 
-		console.log("Google Speech sent 'final' Sentence.");
-		finalWord = true;
-		endButton.disabled = false;
 
-		removeLastSentence = false;
-		console.log(resultText.innerText); //Fode
-	}
+		  voicecommandtemp = resultText.innerText;
+		  loopChecker = countoccur(voicecommandtemp, lastcommand) === 0 &&
+		  	countoccur(voicecommandtemp, "interacting with me") === 0 &&
+		  	countoccur(voicecommandtemp, "use my knowledge") === 0;
+
+
+
+	//}
+	
 });
 
 
