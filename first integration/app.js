@@ -69,11 +69,26 @@ io.on('connection', function (client) {
         recognizeStream = speechClient.streamingRecognize(request)
             .on('error', console.error)
             .on('data', (data) => {
-                process.stdout.write(
-                    (data.results[0] && data.results[0].alternatives[0])
-                        ? `Transcription: ${data.results[0].alternatives[0].transcript}\n`
-                        : `\n\nReached transcription time limit, press Ctrl+C\n`);
-                client.emit('speechData', data);
+
+if (data.results[0].isFinal) {
+    const loopTampon = ((data.results[0].alternatives[0].transcript).trim()).split(" ");
+    //console.log(loopTampon);
+    if (loopTampon[0] == "Novus") {
+        process.stdout.write(
+            (data.results[0] && data.results[0].alternatives[0]) ?
+            `Transcription: ${data.results[0].alternatives[0].transcript}\n` :
+            `\n\nReached transcription time limit, press Ctrl+C\n`);
+        client.emit('speechData', data, true);
+    }else{
+       client.emit('speechData', data, false);
+    }
+
+}
+
+
+
+
+                
 
                 // if end of utterance, let's restart stream
                 // this is a small hack. After 65 seconds of silence, the stream will still throw an error for speech length limit
