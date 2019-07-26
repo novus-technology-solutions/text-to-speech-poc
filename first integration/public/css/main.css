@@ -116,7 +116,7 @@ h1 {
 .bloc1 {
     background-image: url("/assets/images/block1.jpg");
 }
-
+/*
 .bloc2 {
     background-image: url("/assets/images/block2.jpg");
 }
@@ -128,7 +128,7 @@ h1 {
 .bloc4 {
     background-image: url("/assets/images/block4.jpg");
 }
-
+*/
 
 .container {
     max-width: 980px;
@@ -142,8 +142,8 @@ h1 {
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     float: left;
-    width: 440px;
-    height: 258px;
+    width: 940px;
+    /*height: 258px;*/
     padding: 20px;
     margin-left: 10px;
     margin-top: 5px;
