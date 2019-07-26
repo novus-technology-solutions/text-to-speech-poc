@@ -205,25 +205,34 @@ socket.on('speechData', function (data, isNonus) {
   	finalWord = true;
   	endButton.disabled = false;
 
-  	removeLastSentence = false;
+	  removeLastSentence = false;
+	  
+	 let loopTampon = countoccur((data.results[0].alternatives[0].transcript).trim(),'Novus');
+      if (loopTampon <2) {
+		let voicecommandtemp = ((data.results[0].alternatives[0].transcript).trim()).split(" ");
+		console.log(voicecommandtemp.length);
+		if (voicecommandtemp.length > 2) {
+			setTimeout(function () {
+				let textCommand = (((data.results[0].alternatives[0].transcript).trim()).split("Novus"))[1];
+				responsiveVoice.speak("Great! I will use my knowledge to " + textCommand.replace("me", "you"), "UK English Female");
+			}, 500);
 
-  	//console.log(resultText.innerText); //Fode
-  	let voicecommandtemp = (resultText.innerText).trim();
-  	let voicecommandfinal = voicecommandtemp.split(".");
-  	let voicecommandslice = (voicecommandfinal[0]).split(" ");
-  	if (voicecommandslice.length > 2) {
-  		co
-  		responsiveVoice.speak("Great! I will use my knowledge to " + voicecommandtemp, "UK English Female");
-  	} else {
-  		responsiveVoice.speak("Please use the right pattern for interacting with me.", "UK English Female");
-  	}
+		} else {
+
+			setTimeout(function () {
+				responsiveVoice.speak("Please use the right pattern for interacting with me.", "UK English Female");
+			}, 500);
+
+		}
+	  }
+	
 
   }
 
 
-		  }else{
+		  }/*else{
             responsiveVoice.speak("Please use the right pattern for interacting with me.", "UK English Female");
-		  }
+		  }*/
 		  
 		
 		
