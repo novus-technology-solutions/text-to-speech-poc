@@ -157,7 +157,7 @@ socket.on('speechData', function (data, isNonus) {
 	
 		  console.log(isNonus);
 		 
-		  if (isNonus){
+ if (isNonus){
 
   var dataFinal = undefined || data.results[0].isFinal;
 
@@ -211,13 +211,22 @@ socket.on('speechData', function (data, isNonus) {
       if (loopTampon <2) {
 		let voicecommandtemp = ((data.results[0].alternatives[0].transcript).trim()).split(" ");
 		console.log(voicecommandtemp.length);
-		if (voicecommandtemp.length > 2) {
+		if (voicecommandtemp.length > 2 && voicecommandtemp[0] == "Novus") {
 			setTimeout(function () {
 				let textCommand = (((data.results[0].alternatives[0].transcript).trim()).split("Novus"))[1];
 				responsiveVoice.speak("Great! I will use my knowledge to " + textCommand.replace("me", "you"), "UK English Female");
 			}, 500);
 
-		} else {
+		} else if (voicecommandtemp.length <= 3 && voicecommandtemp[voicecommandtemp.length - 1] == "Novus") {
+						
+			setTimeout(function () {
+				let textCommand2 = (((data.results[0].alternatives[0].transcript).trim()).split("Novus"))[0];
+				responsiveVoice.speak(textCommand2  + " Patricia", "UK English Female");
+			}, 500);
+
+
+
+		}else {
 
 			setTimeout(function () {
 				responsiveVoice.speak("Please use the right pattern for interacting with me.", "UK English Female");

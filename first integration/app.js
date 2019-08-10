@@ -74,14 +74,19 @@ if (data.results[0].isFinal) {
     const loopTampon = ((data.results[0].alternatives[0].transcript).trim()).split(" ");
     //console.log(loopTampon);
     if (loopTampon[0] == "Novus") {
-        process.stdout.write(
-            (data.results[0] && data.results[0].alternatives[0]) ?
-            `Transcription: ${data.results[0].alternatives[0].transcript}\n` :
-            `\n\nReached transcription time limit, press Ctrl+C\n`);
+       
         client.emit('speechData', data, true);
-    }else{
+    } else if (loopTampon.length <= 3 && loopTampon[loopTampon.length - 1] == "Novus") {
+         client.emit('speechData', data, true);
+    }    
+    else{
        client.emit('speechData', data, false);
     }
+
+     process.stdout.write(
+         (data.results[0] && data.results[0].alternatives[0]) ?
+         `Transcription: ${data.results[0].alternatives[0].transcript}\n` :
+         `\n\nReached transcription time limit, press Ctrl+C\n`);
 
 }
 
